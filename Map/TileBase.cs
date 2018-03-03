@@ -13,10 +13,10 @@ namespace ailurus.Map
 
         private TimeSpan _lastFrameSwitch;
         private int _frameIndex;
-        private IDictionary<TileType, IList<Texture2D>> _textures;
+        private TextureMap<TileType> _textures;
         private SpriteBatch _spriteBatch;
 
-        protected TileBase(IDictionary<TileType, IList<Texture2D>> textures, SpriteBatch spriteBatch)
+        protected TileBase(TextureMap<TileType> textures, SpriteBatch spriteBatch)
         {
             _textures = textures;
             _spriteBatch = spriteBatch;

@@ -7,7 +7,7 @@ namespace ailurus.Map.Tiles
 {
     public class GrassTile : TileBase
     {
-        protected GrassTile(IDictionary<TileType, IList<Texture2D>> textures, SpriteBatch spriteBatch) : base(textures, spriteBatch)
+        protected GrassTile(TextureMap<TileType> textures, SpriteBatch spriteBatch) : base(textures, spriteBatch)
         {
             TileType = TileType.Grass;
         }

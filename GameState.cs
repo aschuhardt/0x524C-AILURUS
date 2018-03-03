@@ -12,7 +12,7 @@ namespace ailurus
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private IDictionary<TileType, IList<Texture2D>> _tileTextures;
+        private TextureMap<TileType> _tileTextures;
 
         public GameState()
         {

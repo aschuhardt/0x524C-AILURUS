@@ -10,9 +10,9 @@ namespace ailurus
 {
     public static class Helpers
     {
-        public static IDictionary<T, IList<Texture2D>> LoadTextures<T>(ContentManager content)
+        public static TextureMap<T> LoadTextures<T>(ContentManager content)
         {
-            var loaded = new Dictionary<T, IList<Texture2D>>();
+            var loaded = new TextureMap<T>();
             foreach (var t in typeof(T).GetMembers())
             {
                 var attrs = t.GetCustomAttributes(typeof(TextureAttribute), false);
