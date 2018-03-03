@@ -1,13 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ailurus.Map;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ailurus
 {
     public class GameState : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private IDictionary<TileType, IList<Texture2D>> _tileTextures;
 
         public GameState()
         {
@@ -27,7 +32,8 @@ namespace ailurus
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // load textures
+            _tileTextures = Helpers.LoadTextures<TileType>(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -42,9 +48,13 @@ namespace ailurus
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
