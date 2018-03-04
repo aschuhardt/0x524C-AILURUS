@@ -2,7 +2,7 @@
 
 namespace ailurus
 {
-    [System.AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = true)]
     sealed class TextureAttribute : Attribute
     {
         readonly string _contentPath;

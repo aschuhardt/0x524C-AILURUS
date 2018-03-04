@@ -1,4 +1,6 @@
 ﻿using ailurus.Map;
+using ailurus.Map.Tiles;
+using DryIoc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,42 +14,49 @@ namespace ailurus
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private TextureMap<TileType> _tileTextures;
         private TileMap _map;
-        private Rectangle _mapRectangle;
+        private Rectangle _mapDrawRectangle;
+        private Rectangle _drawRegion;
+        private KeyboardState _oldKeyState;
+
+        private Container _container;
 
         private const int MAP_LEFT_PAD = 4;
         private const int MAP_TOP_PAD = 4;
         private const double MAP_WIDTH_PERCENT = 0.75;
         private const double MAP_HEIGHT_PERCENT = 0.95;
+        private const string CONFIG_PATH = "config.json";
 
         public GameState()
         {
+            _container = new Container();
+
+            _container.RegisterDelegate(x => Helpers.GetDecorations(), Reuse.Singleton);
+            _container.RegisterDelegate(x => _container, Reuse.Singleton);
+            _container.RegisterDelegate(x => new Random(), Reuse.Singleton);
+            _container.RegisterDelegate(x => Helpers.LoadConfig(CONFIG_PATH), Reuse.Singleton);
+
+            var config = _container.Resolve<Config>();
+
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferWidth = config.WindowWidth;
+            graphics.PreferredBackBufferHeight = config.WindowHeight;
+
+            _drawRegion = new Rectangle(config.MapWidth / 2, config.MapHeight / 2, 16, 16);
+
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
 
             Window.ClientSizeChanged += HandleWindowResize;
-        }
-
-        private void HandleWindowResize(object sender, EventArgs e)
-        {
-            SetMapSize();
-        }
-
-        private void SetMapSize()
-        {
-            var size = Math.Min(Convert.ToInt32(Window.ClientBounds.Width * MAP_WIDTH_PERCENT),
-                Convert.ToInt32(Window.ClientBounds.Height * MAP_HEIGHT_PERCENT));
-
-            _mapRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, size, size);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
 
-            SetMapSize();
+            _oldKeyState = Keyboard.GetState();
+            
+            SetMapDrawSize();
             Window.AllowUserResizing = true;
             Window.Title = "0x524C-AILURUS";
         }
@@ -55,20 +64,32 @@ namespace ailurus
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            _container.UseInstance(Helpers.LoadTextures<TileType>(Content));
+            _container.UseInstance(Helpers.LoadTextures<DecorationType>(Content));
+            _container.UseInstance(spriteBatch);
 
-            // load textures
-            _tileTextures = Helpers.LoadTextures<TileType>(Content);
+            // register tile types
+            _container.Register<GrassTile, GrassTile>();
+            _container.Register<DirtTile, DirtTile>();
 
-
-            _map = new TileMap(32, 32, _tileTextures, spriteBatch);
+            _container.Register<TileMap, TileMap>();
+            _map = _container.Resolve<TileMap>();
         }
 
         protected override void Update(GameTime gameTime)
         {
+            var currentKeyState = Keyboard.GetState();
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            if (currentKeyState.IsKeyDown(Keys.Add) && _oldKeyState.IsKeyUp(Keys.Add))
+                _drawRegion.Inflate(1, 1);
+            else if (currentKeyState.IsKeyDown(Keys.Subtract) && _oldKeyState.IsKeyUp(Keys.Subtract))
+                _drawRegion.Inflate(-1, -1);
+
+            _oldKeyState = currentKeyState;
 
             base.Update(gameTime);
         }
@@ -79,11 +100,30 @@ namespace ailurus
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-            _map.Draw(gameTime, _mapRectangle);
+            _map.Draw(gameTime, _mapDrawRectangle, _drawRegion);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
+
+        private void HandleWindowResize(object sender, EventArgs e)
+        {
+            var config = _container.Resolve<Config>();
+            config.WindowWidth = Window.ClientBounds.Width;
+            config.WindowHeight = Window.ClientBounds.Height;
+            Helpers.SaveConfig(config, CONFIG_PATH);
+
+            SetMapDrawSize();
+        }
+
+        private void SetMapDrawSize()
+        {
+            var size = Math.Min(Convert.ToInt32(Window.ClientBounds.Width * MAP_WIDTH_PERCENT),
+                Convert.ToInt32(Window.ClientBounds.Height * MAP_HEIGHT_PERCENT));
+
+            _mapDrawRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, size, size);
+        }
+
     }
 }

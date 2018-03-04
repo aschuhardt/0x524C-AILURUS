@@ -6,11 +6,13 @@ namespace ailurus.Map.Tiles
 {
     public class GrassTile : TileBase
     {
-        public GrassTile(TextureMap<TileType> textures, SpriteBatch spriteBatch, Random rand) : base(textures, spriteBatch)
+        public GrassTile(TextureMap<TileType> tileTextures, TextureMap<DecorationType> decorTextures, Decorations decorations, SpriteBatch spriteBatch, Random rand)
+            : base(tileTextures, decorTextures, decorations, spriteBatch, rand)
         {
             TileType = TileType.Grass;
             SpriteColor = Color.ForestGreen;
-            AnimationInterval = TimeSpan.FromMilliseconds(rand.Next(500, 5000));
+
+            SetupDecoration();
         }
     }
 }
