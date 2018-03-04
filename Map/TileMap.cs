@@ -18,8 +18,9 @@ namespace ailurus.Map
         private int _width;
         private int _height;
         private Container _container;
+        private Random _rand;
 
-        public TileMap(TextureMap<TileType> textures, TextureMap<DecorationType> decorTextures, Decorations decorations, SpriteBatch spriteBatch, Container container, Config config)
+        public TileMap(TextureMap<TileType> textures, TextureMap<DecorationType> decorTextures, Decorations decorations, SpriteBatch spriteBatch, Container container, Config config, Random rand)
         {
             _textures = textures;
             _spriteBatch = spriteBatch;
@@ -29,6 +30,7 @@ namespace ailurus.Map
             _width = config.MapWidth;
             _height = config.MapWidth;
             _container = container;
+            _rand = rand;
 
             Generate();
         }
@@ -41,7 +43,7 @@ namespace ailurus.Map
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    if (SimplexNoise.Noise.Generate(x * 0.07f, y * 0.07f) > 0.5f)
+                    if (SimplexNoise.Noise.Generate(x * 0.07f, y * 0.07f) > 0.5f - _rand.NextDouble())
                         _tiles[x, y] = _container.Resolve<GrassTile>();
                     else
                         _tiles[x, y] = _container.Resolve<DirtTile>();

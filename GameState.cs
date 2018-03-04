@@ -18,6 +18,7 @@ namespace ailurus
         private Rectangle _mapDrawRectangle;
         private Rectangle _drawRegion;
         private KeyboardState _oldKeyState;
+        private Color _bgColor;
 
         private Container _container;
 
@@ -43,6 +44,8 @@ namespace ailurus
             graphics.PreferredBackBufferHeight = config.WindowHeight;
 
             _drawRegion = new Rectangle(config.MapWidth / 2, config.MapHeight / 2, 16, 16);
+
+            _bgColor = new Color(18, 21, 26);
 
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
@@ -84,10 +87,19 @@ namespace ailurus
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (currentKeyState.IsKeyDown(Keys.Add) && _oldKeyState.IsKeyUp(Keys.Add))
+            if (KeyPressed(Keys.Add))
                 _drawRegion.Inflate(1, 1);
-            else if (currentKeyState.IsKeyDown(Keys.Subtract) && _oldKeyState.IsKeyUp(Keys.Subtract))
+            else if (KeyPressed(Keys.Subtract))
                 _drawRegion.Inflate(-1, -1);
+
+            if (KeyPressed(Keys.Up))
+                _drawRegion.Offset(0, -1);
+            else if (KeyPressed(Keys.Down))
+                _drawRegion.Offset(0, 1);
+            else if (KeyPressed(Keys.Left))
+                _drawRegion.Offset(-1, 0);
+            else if (KeyPressed(Keys.Right))
+                _drawRegion.Offset(1, 0);
 
             _oldKeyState = currentKeyState;
 
@@ -96,7 +108,7 @@ namespace ailurus
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(_bgColor);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
@@ -125,5 +137,9 @@ namespace ailurus
             _mapDrawRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, size, size);
         }
 
+        private bool KeyPressed(Keys key)
+        {
+            return Keyboard.GetState().IsKeyDown(key) && _oldKeyState.IsKeyUp(key);
+        }
     }
 }
