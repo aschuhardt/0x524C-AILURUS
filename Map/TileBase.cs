@@ -10,6 +10,7 @@ namespace ailurus.Map
         public TileType TileType { get; protected set; }
 
         protected TimeSpan AnimationInterval = TimeSpan.FromSeconds(0.5);
+        protected Color SpriteColor = Color.White;
 
         private TimeSpan _lastFrameSwitch;
         private int _frameIndex;
@@ -26,11 +27,11 @@ namespace ailurus.Map
         {
             var availableTextures = _textures[TileType];
 
-            _spriteBatch.Draw(availableTextures[_frameIndex], rect, Color.White);
+            _spriteBatch.Draw(availableTextures[_frameIndex], rect, SpriteColor);
 
             if (availableTextures.Count == 1) return;
 
-            var elapsed = gameTime.ElapsedGameTime;
+            var elapsed = gameTime.TotalGameTime;
             if (elapsed - _lastFrameSwitch >= AnimationInterval)
             {
                 if (_frameIndex < _textures[TileType].Count - 1)

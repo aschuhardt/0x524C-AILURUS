@@ -6,9 +6,9 @@ namespace ailurus.Map
 {
     public enum TileType
     {
-        [Texture("tiles/grass_1", 0)]
-        [Texture("tiles/grass_2", 1)]
-        [Texture("tiles/grass_3", 2)]
+        [Texture("tiles/dots_1", 0)]
+        [Texture("tiles/dots_2", 1)]
+        [Texture("tiles/dots_3", 2)]
         Grass
     }
 }
