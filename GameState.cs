@@ -113,6 +113,13 @@ namespace ailurus
                 _player.Position.Y - _drawRegion.Height / 2);
         }
 
+        protected override void UnloadContent()
+        {
+            base.UnloadContent();
+
+            _ui.UnloadContent();
+        }
+
         protected override void Update(GameTime gameTime)
         {
             var keys = Keyboard.GetState();

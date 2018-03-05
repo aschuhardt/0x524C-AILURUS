@@ -19,7 +19,7 @@ namespace ailurus.UI
         private Color _hitpointsColor;
         private Color _staminaColor;
         private Color _positionColor;
-        private Texture2D _barTexture;
+        private Texture2D _basicTexture;
         private Color _barBgColor;
         private const int VERTICAL_SPACING = 14;
 
@@ -33,9 +33,14 @@ namespace ailurus.UI
             _staminaColor = new Color(130, 128, 60);
             _positionColor = new Color(106, 112, 123);
 
-            _barTexture = new Texture2D(graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            _barTexture.SetData(new[] { Color.White });
+            _basicTexture = new Texture2D(graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            _basicTexture.SetData(new[] { Color.White });
             _barBgColor = new Color(18, 21, 26);
+        }
+
+        public void UnloadContent()
+        {
+            _basicTexture.Dispose();
         }
 
         public void Update(GameTime gameTime)
@@ -71,9 +76,9 @@ namespace ailurus.UI
             var barRectOutline = new Rectangle(position, size);
             var barRectInterior = new Rectangle(position.X + 1, position.Y + 1, size.X - 2, size.Y - 2);
             var barRectValue = new Rectangle(position.X + 1, position.Y + 1, percSize.X - 2, percSize.Y - 2);
-            _spriteBatch.Draw(_barTexture, barRectOutline, color);
-            _spriteBatch.Draw(_barTexture, barRectInterior, _barBgColor);
-            _spriteBatch.Draw(_barTexture, barRectValue, color);
+            _spriteBatch.Draw(_basicTexture, barRectOutline, color);
+            _spriteBatch.Draw(_basicTexture, barRectInterior, _barBgColor);
+            _spriteBatch.Draw(_basicTexture, barRectValue, color);
         }
     }
 }
