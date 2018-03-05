@@ -62,7 +62,7 @@ namespace ailurus.Player
             _spriteBatch = spriteBatch;
 
             MaxHitpoints = rand.Next(MIN_HP, MAX_HP + 1);
-            Hitpoints = MaxHitpoints;
+            Hitpoints = MaxHitpoints / 2;
 
             MaxStamina = rand.Next(MIN_ST, MAX_ST + 1);
             Stamina = MaxStamina;

@@ -81,6 +81,7 @@ namespace ailurus
             _container.UseInstance(spriteBatch);
 
             _container.RegisterDelegate(x => Helpers.GetDecorations(), Reuse.Singleton);
+            _container.UseInstance(graphics);
             _container.UseInstance(_container);
             _container.RegisterDelegate(x => new Random(), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadConfig(CONFIG_PATH), Reuse.Singleton);
