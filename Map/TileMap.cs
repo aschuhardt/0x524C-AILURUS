@@ -34,6 +34,20 @@ namespace ailurus.Map
 
             Generate();
         }
+
+        public Point GetPlayerStartingPosition()
+        {
+            return new Point(_width / 2, _height / 2);
+        }
+
+        public Rectangle GetScreenCoordinates(Point p, Rectangle drawRect, Rectangle drawRegion)
+        {
+            var tileWidth = drawRect.Width / drawRegion.Width;
+            var tileHeight = drawRect.Height / drawRegion.Height;
+
+            var pos = new Point(drawRect.Left + tileWidth * (p.X - drawRegion.Left), drawRect.Top + tileHeight * (p.Y - drawRegion.Top));
+            return new Rectangle(pos, new Point(tileWidth, tileHeight));
+        }
         
         protected virtual void Generate()
         {
@@ -68,9 +82,9 @@ namespace ailurus.Map
                 {
                     if (y < 0 || y >= _height) continue;
 
-                    var tilePosition = new Point(rect.Left + tileWidth * (x - region.Left), rect.Top + tileHeight * (y - region.Top));
+                    //var tilePosition = new Point(rect.Left + tileWidth * (x - region.Left), rect.Top + tileHeight * (y - region.Top));
 
-                    _tiles[x, y].Draw(gameTime, new Rectangle(tilePosition, tileSize));
+                    _tiles[x, y].Draw(gameTime, GetScreenCoordinates(new Point(x, y), rect, region));
                 }
             }
         }
