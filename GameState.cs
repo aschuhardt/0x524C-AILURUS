@@ -1,6 +1,7 @@
 ﻿using ailurus.Map;
 using ailurus.Map.Tiles;
 using ailurus.Player;
+using ailurus.UI;
 using DryIoc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -23,14 +24,19 @@ namespace ailurus
         private Color _bgColor;
         private Container _container;
         private PlayerController _player;
+        private UserInterfaceController _ui;
+        private Rectangle _uiDrawRectangle;
 
-        private TimeSpan _inputCooldown = TimeSpan.FromMilliseconds(50);
+        private TimeSpan _inputCooldown = TimeSpan.FromMilliseconds(100);
         private TimeSpan _lastInputTime;
 
         private const int MAP_LEFT_PAD = 4;
         private const int MAP_TOP_PAD = 4;
-        private const double MAP_WIDTH_PERCENT = 0.75;
-        private const double MAP_HEIGHT_PERCENT = 0.95;
+        private const int MAP_BOTTOM_PAD = 4;
+        private const int UI_LEFT_PAD = 32;
+        private const int UI_TOP_PAD = 4;
+        private const double MAP_WIDTH_PERCENT = 0.90;
+        private const double MAP_HEIGHT_PERCENT = 1.0;
         private const int MAP_REGION_SIZE = 16;
         private const string CONFIG_PATH = "config.json";
         
@@ -63,7 +69,7 @@ namespace ailurus
             
             _oldKeyState = Keyboard.GetState();
             
-            SetMapDrawSize();
+            SetupGUIPositioning();
             Window.AllowUserResizing = true;
             Window.Title = "0x524C-AILURUS";
         }
@@ -81,18 +87,23 @@ namespace ailurus
             _container.RegisterDelegate(x => Helpers.LoadTextures<TileType>(Content), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<DecorationType>(Content), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<PlayerTexture>(Content), Reuse.Singleton);
-            _container.Register<PlayerController, PlayerController>();
+            _container.RegisterDelegate(x => Content.Load<SpriteFont>("fonts/vga"), Reuse.Singleton);
+            _container.Register<PlayerController, PlayerController>(Reuse.Singleton);
+            _container.Register<UserInterfaceController, UserInterfaceController>(Reuse.Singleton);
 
             // register tile types
             _container.Register<GrassTile, GrassTile>();
             _container.Register<DirtTile, DirtTile>();
 
-            _container.Register<TileMap, TileMap>();
+            _container.Register<TileMap, TileMap>(Reuse.Singleton);
 
             _map = _container.Resolve<TileMap>();
+
             _player = _container.Resolve<PlayerController>();
             _player.Position = _map.GetPlayerStartingPosition();
             _player.PlayerMoved += HandlePlayerMoved;
+
+            _ui = _container.Resolve<UserInterfaceController>();
         }
 
         private void HandlePlayerMoved(object sender, EventArgs e)
@@ -128,6 +139,7 @@ namespace ailurus
             }
 
             _player.Update(gameTime);
+            _ui.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -144,6 +156,8 @@ namespace ailurus
             if (_mapDrawRectangle.Contains(playerRect))
                 _player.Draw(gameTime, playerRect);
 
+            _ui.Draw(gameTime, _uiDrawRectangle);
+
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -156,15 +170,19 @@ namespace ailurus
             config.WindowHeight = Window.ClientBounds.Height;
             Helpers.SaveConfig(config, CONFIG_PATH);
 
-            SetMapDrawSize();
+            SetupGUIPositioning();
         }
 
-        private void SetMapDrawSize()
+        private void SetupGUIPositioning()
         {
-            var size = Math.Min(Convert.ToInt32(Window.ClientBounds.Width * MAP_WIDTH_PERCENT),
+            var mapSize = Math.Min(Convert.ToInt32(Window.ClientBounds.Width * MAP_WIDTH_PERCENT),
                 Convert.ToInt32(Window.ClientBounds.Height * MAP_HEIGHT_PERCENT));
 
-            _mapDrawRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, size, size);
+            _mapDrawRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, mapSize, mapSize - MAP_BOTTOM_PAD);
+
+            var uiWidth = Window.ClientBounds.Width - _mapDrawRectangle.Width;
+            var uiHeight = Window.ClientBounds.Height;
+            _uiDrawRectangle = new Rectangle(_mapDrawRectangle.Right + MAP_LEFT_PAD, UI_TOP_PAD, uiWidth, uiHeight);
         }
     }
 }

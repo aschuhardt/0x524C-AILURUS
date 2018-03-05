@@ -2,17 +2,20 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ailurus.Player
 {
     public class PlayerController
     {
         public string Name { get; set; }
+
         public int Hitpoints { get; set; }
+        public int MaxHitpoints { get; set; }
+
         public int Stamina { get; set; }
+        public int MaxStamina { get; set; }
+
         public Point Position { get; set; }
 
         public enum PlayerTexture
@@ -33,6 +36,10 @@ namespace ailurus.Player
         private TimeSpan _lastMovementTime;
         private const int COLOR_MIN = 100;
         private const int COLOR_MAX = 250;
+        private const int MIN_HP = 50;
+        private const int MAX_HP = 200;
+        private const int MIN_ST = 10;
+        private const int MAX_ST = 40;
 
         public event EventHandler PlayerCreated;
         protected virtual void OnPlayerCreated(EventArgs e) => PlayerCreated(this, e);
@@ -53,7 +60,13 @@ namespace ailurus.Player
             _hatColor = new Color(_rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX));
             _textures = textures;
             _spriteBatch = spriteBatch;
-            
+
+            MaxHitpoints = rand.Next(MIN_HP, MAX_HP + 1);
+            Hitpoints = MaxHitpoints;
+
+            MaxStamina = rand.Next(MIN_ST, MAX_ST + 1);
+            Stamina = MaxStamina;
+
             if (PlayerCreated != null)
                 OnPlayerCreated(EventArgs.Empty);
         }
@@ -64,6 +77,7 @@ namespace ailurus.Player
             if (gameTime.TotalGameTime - _lastMovementTime >= _movementCooldown)
             {
                 var (dx, dy) = (0, 0);
+
                 // check for movement input
                 if (keys.IsKeyDown(Keys.NumPad8))
                     dy -= 1;
@@ -108,7 +122,6 @@ namespace ailurus.Player
                         _lastMovementTime = gameTime.TotalGameTime;
                     }
                 }
-
             }
         }
 
