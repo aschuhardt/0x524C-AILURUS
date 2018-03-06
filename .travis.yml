@@ -3,7 +3,7 @@ mono: latest
 dotnet: 2.1.4
 install:
     - sudo apt-get install -y gtk-sharp3
-    - wget http://teamcity.monogame.net/repository/download/MonoGame_PackageMacAndLinux/latest.lastSuccessful/Linux/monogame-sdk.run
+    - wget -O monogame-sdk.run http://teamcity.monogame.net/repository/download/MonoGame_PackageMacAndLinux/latest.lastSuccessful/Linux/monogame-sdk.run?guest=1
     - chmod +x ./monogame-sdk.run
     - echo "Y" | sudo ./monogame-sdk.run
 script:
