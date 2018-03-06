@@ -1,4 +1,4 @@
-﻿language: csharp
+language: csharp
 mono: latest
 dotnet: 2.1.4
 install:
@@ -6,7 +6,10 @@ install:
     - wget -O monogame-sdk.run http://teamcity.monogame.net/repository/download/MonoGame_PackageMacAndLinux/latest.lastSuccessful/Linux/monogame-sdk.run?guest=1
     - chmod +x ./monogame-sdk.run
     - echo "Y" | sudo ./monogame-sdk.run
-    - sudo wget -O libfreeimage-3.17.0.so https://github.com/MonoGame/MonoGame.Dependencies/raw/master/FreeImage.NET/Linux/x64/libfreeimage-3.17.0.so
+    - wget http://downloads.sourceforge.net/freeimage/FreeImage3170.zip
+    - unzip FreeImage3170.zip
+    - cd FreeImage
+    - make -k && sudo make install && cd ..
 script:
     - dotnet restore
     - dotnet build -c release
