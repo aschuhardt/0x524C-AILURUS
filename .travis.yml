@@ -2,7 +2,7 @@
 mono: latest
 dotnet: 2.1.4
 install:
-    - sudo apt-get install -y libfreeimage3 libfreeimage-dev
+    - sudo apt-get install -y libfreeimageplus3 libfreeimageplus-dev
 script:
     - dotnet restore
     - dotnet build -c release
