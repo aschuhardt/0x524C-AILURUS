@@ -6,6 +6,7 @@ install:
     - wget -O monogame-sdk.run http://teamcity.monogame.net/repository/download/MonoGame_PackageMacAndLinux/latest.lastSuccessful/Linux/monogame-sdk.run?guest=1
     - chmod +x ./monogame-sdk.run
     - echo "Y" | sudo ./monogame-sdk.run
+    - sudo wget -O /usr/local/lib/libfreeimage-3.17.0.so https://github.com/MonoGame/MonoGame.Dependencies/raw/master/FreeImage.NET/Linux/x64/libfreeimage-3.17.0.so
 script:
     - dotnet restore
     - dotnet build -c release
