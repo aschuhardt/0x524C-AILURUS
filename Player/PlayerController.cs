@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ailurus.Player
@@ -34,6 +35,7 @@ namespace ailurus.Player
         private Random _rand;
         private TimeSpan _movementCooldown = TimeSpan.FromMilliseconds(150);
         private TimeSpan _lastMovementTime;
+        private List<Message> _messages;
         private const int COLOR_MIN = 100;
         private const int COLOR_MAX = 250;
         private const int MIN_HP = 50;
@@ -53,9 +55,10 @@ namespace ailurus.Player
         public event EventHandler PlayerMoved;
         protected virtual void OnPlayerMoved(EventArgs e) => PlayerMoved(this, e);
 
-        public PlayerController(Random rand, TextureMap<PlayerTexture> textures, SpriteBatch spriteBatch)
+        public PlayerController(Random rand, TextureMap<PlayerTexture> textures, SpriteBatch spriteBatch, List<Message> messages)
         {
             _rand = rand;
+            _messages = messages;
             _playerColor = new Color(_rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX));
             _hatColor = new Color(_rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX), _rand.Next(COLOR_MIN, COLOR_MAX));
             _textures = textures;

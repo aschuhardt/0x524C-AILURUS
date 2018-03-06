@@ -26,19 +26,22 @@ namespace ailurus
         private PlayerController _player;
         private UserInterfaceController _ui;
         private Rectangle _uiDrawRectangle;
+        private List<Message> _messages;
 
         private TimeSpan _inputCooldown = TimeSpan.FromMilliseconds(100);
         private TimeSpan _lastInputTime;
 
-        private const int MAP_LEFT_PAD = 4;
+        private const int MAP_LEFT_PAD = 2;
         private const int MAP_TOP_PAD = 4;
         private const int MAP_BOTTOM_PAD = 4;
+        private const int MAP_RIGHT_PAD = 8;
         private const int UI_LEFT_PAD = 32;
         private const int UI_TOP_PAD = 4;
         private const double MAP_WIDTH_PERCENT = 0.90;
         private const double MAP_HEIGHT_PERCENT = 1.0;
-        private const int MAP_REGION_SIZE = 16;
+        private const int MAP_REGION_SIZE = 17;
         private const string CONFIG_PATH = "config.json";
+        private const int MAP_SHRINK_AMOUNT = -8;
         
         public GameState()
         {
@@ -70,7 +73,7 @@ namespace ailurus
             _oldKeyState = Keyboard.GetState();
             
             SetupGUIPositioning();
-            Window.AllowUserResizing = true;
+            Window.AllowUserResizing = false;
             Window.Title = "0x524C-AILURUS";
         }
 
@@ -83,6 +86,7 @@ namespace ailurus
             _container.RegisterDelegate(x => Helpers.GetDecorations(), Reuse.Singleton);
             _container.UseInstance(graphics);
             _container.UseInstance(_container);
+            _container.RegisterDelegate(x => new List<Message>(), Reuse.Singleton);
             _container.RegisterDelegate(x => new Random(), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadConfig(CONFIG_PATH), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<TileType>(Content), Reuse.Singleton);
@@ -105,6 +109,8 @@ namespace ailurus
             _player.PlayerMoved += HandlePlayerMoved;
 
             _ui = _container.Resolve<UserInterfaceController>();
+
+            _messages = _container.Resolve<List<Message>>();
         }
 
         private void HandlePlayerMoved(object sender, EventArgs e)
@@ -158,6 +164,7 @@ namespace ailurus
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
+            _ui.DrawRect(_mapDrawRectangle, _ui.BaseColor);
             _map.Draw(gameTime, _mapDrawRectangle, _drawRegion);
 
             var playerRect = _map.GetScreenCoordinates(_player.Position, _mapDrawRectangle, _drawRegion);
@@ -187,10 +194,11 @@ namespace ailurus
                 Convert.ToInt32(Window.ClientBounds.Height * MAP_HEIGHT_PERCENT));
 
             _mapDrawRectangle = new Rectangle(MAP_LEFT_PAD, MAP_TOP_PAD, mapSize, mapSize - MAP_BOTTOM_PAD);
+            _mapDrawRectangle.Inflate(MAP_SHRINK_AMOUNT, MAP_SHRINK_AMOUNT);
 
             var uiWidth = Window.ClientBounds.Width - _mapDrawRectangle.Width;
             var uiHeight = Window.ClientBounds.Height;
-            _uiDrawRectangle = new Rectangle(_mapDrawRectangle.Right + MAP_LEFT_PAD, UI_TOP_PAD, uiWidth, uiHeight);
+            _uiDrawRectangle = new Rectangle(_mapDrawRectangle.Right + MAP_LEFT_PAD + MAP_RIGHT_PAD, UI_TOP_PAD, uiWidth - MAP_RIGHT_PAD * 2, uiHeight);
         }
     }
 }

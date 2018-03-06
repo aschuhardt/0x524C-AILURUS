@@ -6,7 +6,7 @@ namespace ailurus
 {
     public class Config
     {
-        public const int DEFAULT_WIDTH = 640;
+        public const int DEFAULT_WIDTH = 800;
         public const int DEFAULT_HEIGHT = 480;
         public const int DEFAULT_MAP_SIZE = 512;
 
