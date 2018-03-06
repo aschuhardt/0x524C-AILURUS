@@ -162,7 +162,7 @@ namespace ailurus
         {
             GraphicsDevice.Clear(_bgColor);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.NonPremultiplied, sortMode: SpriteSortMode.Deferred);
 
             _ui.DrawRect(_mapDrawRectangle, _ui.BaseColor);
             _map.Draw(gameTime, _mapDrawRectangle, _drawRegion);

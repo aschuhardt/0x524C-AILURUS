@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ailurus
 {
@@ -8,7 +6,7 @@ namespace ailurus
     {
         Info,
         Dialog,
-        Fighting,
+        Combat,
         Healing
     }
 
@@ -16,11 +14,13 @@ namespace ailurus
     {
         public string Contents { get; set; }
         public MessageType MessageType { get; set; }
+        public DateTime Timestamp { get; set; }
 
         public Message(string contents, MessageType type)
         {
             Contents = contents;
             MessageType = type;
+            Timestamp = DateTime.Now;
         }
     }
 }

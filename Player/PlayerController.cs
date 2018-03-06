@@ -70,6 +70,12 @@ namespace ailurus.Player
             MaxStamina = rand.Next(MIN_ST, MAX_ST + 1);
             Stamina = MaxStamina;
 
+            _messages.Add(new Message("Welcome, traveler!  Your quest is to venture forth in search of an object known as THE AILURUS.", MessageType.Info));
+            _messages.Add(new Message("Testing...", MessageType.Combat));
+            _messages.Add(new Message("Testing...", MessageType.Info));
+            _messages.Add(new Message("Testing...", MessageType.Dialog));
+            _messages.Add(new Message("Testing...", MessageType.Healing));
+
             if (PlayerCreated != null)
                 OnPlayerCreated(EventArgs.Empty);
         }
@@ -113,6 +119,7 @@ namespace ailurus.Player
 
                 if (dx != 0 || dy != 0)
                 {
+                    _messages.Add(new Message($"Player moved to ({Position.X}, {Position.Y})!", MessageType.Info));
                     var destination = new Point(Position.X + dx, Position.Y + dy);
                     var moveAttemptArgs = new PlayerMoveAttemptEventArgs(destination);
                     if (PlayerMoveAttempt != null)
