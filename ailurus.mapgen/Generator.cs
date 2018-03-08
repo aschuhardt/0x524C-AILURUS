@@ -87,13 +87,13 @@ namespace ailurus.mapgen
         private const int STARTING_ROOM_SIZE = 6;
         private const int ROOM_PADDING = 2;
         private const int MIN_SEED_COUNT = 3;
-        private const int MAX_SEED_COUNT = 8;
+        private const int MAX_SEED_COUNT = 12;
         private const int MIN_ROOM_SIZE = 2;
         private const int MAX_ROOM_SIZE = 5;
         private const int MAX_ROOM_SEED_TRIES = 4096;
         private const int MIN_CORRIDOR_WIDTH = 1;
         private const int MAX_CORRIDOR_WIDTH = 2;
-        private const double SECONDARY_ROOM_DENSITY = 0.5;
+        private const double SECONDARY_ROOM_DENSITY = 0.2;
         private const int MIN_SECONDARY_ROOM_REACH = 2;
         private const int MAX_SECONDARY_ROOM_REACH = 8;
         private const int SECONDARY_ROOM_GEN_PASSES = 1;
