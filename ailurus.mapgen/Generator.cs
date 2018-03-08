@@ -86,14 +86,14 @@ namespace ailurus.mapgen
     {
         private const int STARTING_ROOM_SIZE = 6;
         private const int ROOM_PADDING = 2;
-        private const int MIN_SEED_COUNT = 3;
-        private const int MAX_SEED_COUNT = 12;
+        private const int MIN_SEED_COUNT = 8;
+        private const int MAX_SEED_COUNT = 20;
         private const int MIN_ROOM_SIZE = 2;
-        private const int MAX_ROOM_SIZE = 5;
+        private const int MAX_ROOM_SIZE = 8;
         private const int MAX_ROOM_SEED_TRIES = 4096;
         private const int MIN_CORRIDOR_WIDTH = 1;
         private const int MAX_CORRIDOR_WIDTH = 2;
-        private const double SECONDARY_ROOM_DENSITY = 0.2;
+        private const double SECONDARY_ROOM_DENSITY = 0.1;
         private const int MIN_SECONDARY_ROOM_REACH = 2;
         private const int MAX_SECONDARY_ROOM_REACH = 8;
         private const int SECONDARY_ROOM_GEN_PASSES = 1;
@@ -203,7 +203,24 @@ namespace ailurus.mapgen
                 BuildRoom(ref map, room);
             }
 
+            // build walls
+            BuildWalls(ref map);
+
             return map;
+        }
+
+        private static void BuildWalls(ref Cell[,] map)
+        {
+            int mapWidth = map.GetLength(0);
+            int mapHeight = map.GetLength(1);
+
+            for (int x = 0; x < mapWidth; x++)
+                for (int y = 0; y < mapHeight; y++)
+                    if (map[x, y].CellType == CellType.Nothing)
+                    {
+                        if (HasTypeSurrounding(ref map, new Point(x, y), new[] { CellType.Corridor, CellType.Room }, 1))
+                            map[x, y].CellType = CellType.Wall;
+                    }
         }
 
         private static void TryPlacingSecondaryRoomFromOrigin(int x, int y, Cell[,] map, List<Room> rooms, Random rand)
@@ -221,9 +238,9 @@ namespace ailurus.mapgen
                                         new[] { CellType.Nothing }, 1))
                     return;
 
-                // broaden the search for viable room locations
-                for (int radius = MIN_SECONDARY_ROOM_REACH;
-                     radius <= MAX_SECONDARY_ROOM_REACH; radius++)
+                // narrow the search for viable room locations
+                for (int radius = MAX_SECONDARY_ROOM_REACH;
+                     radius >= MIN_SECONDARY_ROOM_REACH; radius--)
                 {
                     // take random samples within a radius
                     for (int i = radius; i < radius * radius; i++)
