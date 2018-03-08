@@ -96,6 +96,7 @@ namespace ailurus.mapgen
         private const double SECONDARY_ROOM_DENSITY = 0.5;
         private const int MIN_SECONDARY_ROOM_REACH = 2;
         private const int MAX_SECONDARY_ROOM_REACH = 8;
+        private const int SECONDARY_ROOM_GEN_PASSES = 1;
 
         public static Cell[,] Generate(int w, int h, int? seed = null)
         {
@@ -181,12 +182,15 @@ namespace ailurus.mapgen
 
             int primaryRoomsCount = rooms.Count;
 
-            // create secondary rooms/corridors off of the seeds            
-            for (int x = 0; x < w; x++)
+            for (int n = 0; n < SECONDARY_ROOM_GEN_PASSES; n++)
             {
-                for (int y = 0; y < h; y++)
+                // create secondary rooms/corridors off of the seeds            
+                for (int x = 0; x < w; x++)
                 {
-                    TryPlacingSecondaryRoomFromOrigin(x, y, map, rooms, rand);
+                    for (int y = 0; y < h; y++)
+                    {
+                        TryPlacingSecondaryRoomFromOrigin(x, y, map, rooms, rand);
+                    }
                 }
             }
 
