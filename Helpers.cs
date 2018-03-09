@@ -12,8 +12,6 @@ namespace ailurus
 {
     public static class Helpers
     {
-        public const string MAP_GEN_CONFIG_PATH = "config/map_generation.json";
-
         public static TextureMap<T> LoadTextures<T>(ContentManager content)
         {
             var loaded = new TextureMap<T>();
@@ -52,19 +50,19 @@ namespace ailurus
 
         public static T GetConfiguration<T>(string path)
         {
-            if (!File.Exists(MAP_GEN_CONFIG_PATH))
+            if (!File.Exists(path))
             {
                 try
                 {
                     var defaultConfig = Activator.CreateInstance<T>();
                     var json = JsonConvert.SerializeObject(defaultConfig, Formatting.Indented);
-                    Directory.CreateDirectory(Path.GetDirectoryName(MAP_GEN_CONFIG_PATH));
-                    File.WriteAllText(MAP_GEN_CONFIG_PATH, json);
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+                    File.WriteAllText(path, json);
                     return GetConfiguration<T>(path);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to write default configuration file to {MAP_GEN_CONFIG_PATH}");
+                    Console.WriteLine($"Failed to write default configuration file to {path}");
                     Console.WriteLine(ex.Message);
                     return Activator.CreateInstance<T>();
                 }
@@ -73,12 +71,12 @@ namespace ailurus
             {
                 try
                 {
-                    var json = File.ReadAllText(MAP_GEN_CONFIG_PATH);
+                    var json = File.ReadAllText(path);
                     return JsonConvert.DeserializeObject<T>(json);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to read configuration file at {MAP_GEN_CONFIG_PATH}");
+                    Console.WriteLine($"Failed to read configuration file at {path}");
                     Console.WriteLine(ex.Message);
                     return Activator.CreateInstance<T>();
                 }

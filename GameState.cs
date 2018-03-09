@@ -45,7 +45,7 @@ namespace ailurus
         private const string CONFIG_PATH = "config/config.json";
         private const string MAP_GEN_CONFIG_PATH = "config/map_generation.json";
         private const int MAP_SHRINK_AMOUNT = -8;
-        
+
         public GameState()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -68,13 +68,13 @@ namespace ailurus
             graphics.PreferredBackBufferWidth = config.WindowWidth;
             graphics.PreferredBackBufferHeight = config.WindowHeight;
 
-            _drawRegion = new Rectangle(config.MapWidth / 2 - (MAP_REGION_SIZE / 2), 
+            _drawRegion = new Rectangle(config.MapWidth / 2 - (MAP_REGION_SIZE / 2),
                 config.MapHeight / 2 - (MAP_REGION_SIZE / 2), MAP_REGION_SIZE, MAP_REGION_SIZE);
 
             _bgColor = new Color(18, 21, 26);
-            
+
             _oldKeyState = Keyboard.GetState();
-            
+
             SetupGUIPositioning();
             Window.AllowUserResizing = true;
             Window.Title = "0x524C-AILURUS";
@@ -198,7 +198,7 @@ namespace ailurus
             var config = _container.Resolve<Config>();
             config.WindowWidth = Window.ClientBounds.Width;
             config.WindowHeight = Window.ClientBounds.Height;
-            
+
             var json = JsonConvert.SerializeObject(config);
             File.WriteAllText(CONFIG_PATH, json);
 
