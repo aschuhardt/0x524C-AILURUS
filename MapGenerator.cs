@@ -54,7 +54,7 @@ namespace ailurus
             public int MinimumSecondaryRoomDeviation { get; set; }
             public int MaximumSecondaryRoomDeviation { get; set; }
             public int SecondaryRoomComputationPasses { get; set; }
-            public int Seed { get; set; }
+            public int? Seed { get; set; }
 
             public MapGenerationConfig()
             {
@@ -71,7 +71,7 @@ namespace ailurus
                 MinimumSecondaryRoomDeviation = DEFAULT_MIN_SECONDARY_ROOM_DEVIATION;
                 MaximumSecondaryRoomDeviation = DEFAULT_MAX_SECONDARY_ROOM_DEVIATION;
                 SecondaryRoomComputationPasses = DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES;
-                Seed = new Random().Next();
+                Seed = null;
             }
         }
 
@@ -138,7 +138,7 @@ namespace ailurus
         public static Cell[,] Generate(int w, int h, MapGenerationConfig config)
         {
             var map = new Cell[w, h];
-            var rand = new Random(config.Seed);
+            var rand = new Random(config.Seed ?? (int)(DateTime.Now.Ticks % int.MaxValue));
 
             // initialize
             for (int x = 0; x < w; x++)
