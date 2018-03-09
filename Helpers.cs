@@ -12,6 +12,8 @@ namespace ailurus
 {
     public static class Helpers
     {
+        public const string MAP_GEN_CONFIG_PATH = "config/map_generation.json";
+
         public static TextureMap<T> LoadTextures<T>(ContentManager content)
         {
             var loaded = new TextureMap<T>();
@@ -81,6 +83,41 @@ namespace ailurus
                 }
             }
             return decorations;
+        }
+
+        public static MapGenerationConfig GetMapGenerationConfig()
+        {
+            if (!File.Exists(MAP_GEN_CONFIG_PATH))
+            {
+                try
+                {
+                    var defaultConfig = new MapGenerationConfig();
+                    var json = JsonConvert.SerializeObject(defaultConfig, Formatting.Indented);
+                    Directory.CreateDirectory(Path.GetDirectoryName(MAP_GEN_CONFIG_PATH));
+                    File.WriteAllText(MAP_GEN_CONFIG_PATH, json);
+                    return GetMapGenerationConfig();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to write default configuration file to {MAP_GEN_CONFIG_PATH}");
+                    Console.WriteLine(ex.Message);
+                    return new MapGenerationConfig();
+                }
+            }
+            else
+            {
+                try
+                {
+                    var json = File.ReadAllText(MAP_GEN_CONFIG_PATH);
+                    return JsonConvert.DeserializeObject<MapGenerationConfig>(json);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to read configuration file at {MAP_GEN_CONFIG_PATH}");
+                    Console.WriteLine(ex.Message);
+                    return new MapGenerationConfig();
+                }
+            }
         }
     }
 }

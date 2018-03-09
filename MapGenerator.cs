@@ -14,11 +14,61 @@ namespace ailurus
 
     public struct Cell
     {
-        public ailurus.mapgen.CellType CellType;
+        public CellType CellType;
 
-        public Cell(ailurus.mapgen.CellType cellType)
+        public Cell(CellType cellType)
         {
             CellType = cellType;
+        }
+    }
+
+    public class MapGenerationConfig
+    {
+        public const int DEFAULT_STARTING_ROOM_SIZE = 6;
+        public const int DEFAULT_ROOM_PADDING = 2;
+        public const int DEFAULT_MIN_SEED_COUNT = 8;
+        public const int DEFAULT_MAX_SEED_COUNT = 20;
+        public const int DEFAULT_MIN_ROOM_SIZE = 2;
+        public const int DEFAULT_MAX_ROOM_SIZE = 8;
+        public const int DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS = 4096;
+        public const int DEFAULT_MIN_CORRIDOR_WIDTH = 1;
+        public const int DEFAULT_MAX_CORRIDOR_WIDTH = 2;
+        public const double DEFAULT_SECONDARY_ROOM_DENSITY = 0.1;
+        public const int DEFAULT_MIN_SECONDARY_ROOM_DEVIATION = 2;
+        public const int DEFAULT_MAX_SECONDARY_ROOM_DEVIATION = 8;
+        public const int DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES = 1;
+
+        public int StartingRoomSize { get; set; }
+        public int RoomPadding { get; set; }
+        public int MinimumSeedCount { get; set; }
+        public int MaximumSeedCount { get; set; }
+        public int MinimumRoomSize { get; set; }
+        public int MaximumRoomSize { get; set; }
+        public int MaximumSeedRoomPlacementAttempts { get; set; }
+        public int MinimumCorridorWidth { get; set; }
+        public int MaximumCorridorWidth { get; set; }
+        public double SecondaryRoomDensity { get; set; }
+        public int MinimumSecondaryRoomDeviation { get; set; }
+        public int MaximumSecondaryRoomDeviation { get; set; }
+        public int SecondaryRoomComputationPasses { get; set; }
+        public int Seed { get; set; }
+
+        public MapGenerationConfig()
+        {
+            StartingRoomSize = DEFAULT_STARTING_ROOM_SIZE;
+            RoomPadding = DEFAULT_ROOM_PADDING;
+            MinimumSeedCount = DEFAULT_MIN_SEED_COUNT;
+            MaximumSeedCount = DEFAULT_MAX_SEED_COUNT;
+            MinimumRoomSize = DEFAULT_MIN_ROOM_SIZE;
+            MaximumRoomSize = DEFAULT_MAX_ROOM_SIZE;
+            MaximumSeedRoomPlacementAttempts = DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS;
+            MinimumCorridorWidth = DEFAULT_MIN_CORRIDOR_WIDTH;
+            MaximumCorridorWidth = DEFAULT_MAX_CORRIDOR_WIDTH;
+            SecondaryRoomDensity = DEFAULT_SECONDARY_ROOM_DENSITY;
+            MinimumSecondaryRoomDeviation = DEFAULT_MIN_SECONDARY_ROOM_DEVIATION;
+            MaximumSecondaryRoomDeviation = DEFAULT_MAX_SECONDARY_ROOM_DEVIATION;
+            SecondaryRoomComputationPasses = DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES;
+            Seed = new Random().Next();
         }
     }
 
@@ -84,24 +134,11 @@ namespace ailurus
 
     public static class Generator
     {
-        private const int STARTING_ROOM_SIZE = 6;
-        private const int ROOM_PADDING = 2;
-        private const int MIN_SEED_COUNT = 8;
-        private const int MAX_SEED_COUNT = 20;
-        private const int MIN_ROOM_SIZE = 2;
-        private const int MAX_ROOM_SIZE = 8;
-        private const int MAX_ROOM_SEED_TRIES = 4096;
-        private const int MIN_CORRIDOR_WIDTH = 1;
-        private const int MAX_CORRIDOR_WIDTH = 2;
-        private const double SECONDARY_ROOM_DENSITY = 0.1;
-        private const int MIN_SECONDARY_ROOM_REACH = 2;
-        private const int MAX_SECONDARY_ROOM_REACH = 8;
-        private const int SECONDARY_ROOM_GEN_PASSES = 1;
 
-        public static Cell[,] Generate(int w, int h, int? seed = null)
+        public static Cell[,] Generate(int w, int h, MapGenerationConfig config)
         {
             var map = new Cell[w, h];
-            var rand = seed.HasValue ? new Random(seed.Value) : new Random();
+            var rand = new Random(config.Seed);
 
             // initialize
             for (int x = 0; x < w; x++)
@@ -113,17 +150,17 @@ namespace ailurus
 
             // starting room
             var startingRoom = new Room(new Point(w / 2, h / 2),
-                                        STARTING_ROOM_SIZE,
-                                        STARTING_ROOM_SIZE);
+                                        config.StartingRoomSize,
+                                        config.StartingRoomSize);
 
             rooms.Add(startingRoom);
 
             // seed initial rooms
-            int seedCount = rand.Next(MIN_SEED_COUNT, MAX_SEED_COUNT + 1);
+            int seedCount = rand.Next(config.MinimumSeedCount, config.MaximumSeedCount + 1);
             for (int i = 0; i < seedCount; i++)
             {
                 int tries = 0;
-                int edgePad = MAX_ROOM_SIZE / 2 + 1;
+                int edgePad = config.MaximumRoomSize / 2 + 1;
                 Point center = new Point(-1, -1);
                 int roomWidth = 0;
                 int roomHeight = 0;
@@ -132,22 +169,22 @@ namespace ailurus
                 do
                 {
                     // stop looking if we've exceeded our max attempts
-                    if (tries > MAX_ROOM_SEED_TRIES) break;
+                    if (tries > config.MaximumSeedRoomPlacementAttempts) break;
 
                     // choose a random point in the map
                     center = new Point(rand.Next(edgePad, w - edgePad),
                                        rand.Next(edgePad, h - edgePad));
 
                     // assign random dimensions
-                    roomWidth = rand.Next(MIN_ROOM_SIZE, MAX_ROOM_SIZE + 1);
-                    roomHeight = rand.Next(MIN_ROOM_SIZE, MAX_ROOM_SIZE + 1);
+                    roomWidth = rand.Next(config.MinimumRoomSize, config.MaximumRoomSize + 1);
+                    roomHeight = rand.Next(config.MinimumRoomSize, config.MaximumRoomSize + 1);
 
                     // check its distance against every other room
                     foreach (var room in rooms)
                     {
                         if (center == room.Center) continue;
 
-                        int minDistance = ROOM_PADDING
+                        int minDistance = config.RoomPadding
                                              + Math.Max(room.Width, room.Height) / 2
                                              + Math.Max(roomWidth, roomHeight) / 2;
                         if (!HasTypeSurrounding(ref map, center, new[] { CellType.Corridor, CellType.Room }, minDistance))
@@ -170,8 +207,8 @@ namespace ailurus
             {
                 if (room.Center != startingRoom.Center)
                 {
-                    var width = rand.Next(MIN_CORRIDOR_WIDTH,
-                                          MAX_CORRIDOR_WIDTH + 1);
+                    var width = rand.Next(config.MinimumCorridorWidth,
+                                          config.MaximumCorridorWidth + 1);
                     var corridor = new Corridor(room.Center,
                                                 startingRoom.Center,
                                                 width);
@@ -182,14 +219,14 @@ namespace ailurus
 
             int primaryRoomsCount = rooms.Count;
 
-            for (int n = 0; n < SECONDARY_ROOM_GEN_PASSES; n++)
+            for (int n = 0; n < config.SecondaryRoomComputationPasses; n++)
             {
                 // create secondary rooms/corridors off of the seeds            
                 for (int x = 0; x < w; x++)
                 {
                     for (int y = 0; y < h; y++)
                     {
-                        TryPlacingSecondaryRoomFromOrigin(x, y, map, rooms, rand);
+                        TryPlacingSecondaryRoomFromOrigin(x, y, map, rooms, rand, config);
                     }
                 }
             }
@@ -223,13 +260,13 @@ namespace ailurus
                     }
         }
 
-        private static void TryPlacingSecondaryRoomFromOrigin(int x, int y, Cell[,] map, List<Room> rooms, Random rand)
+        private static void TryPlacingSecondaryRoomFromOrigin(int x, int y, Cell[,] map, List<Room> rooms, Random rand, MapGenerationConfig config)
         {
             int mapWidth = map.GetLength(0);
             int mapHeight = map.GetLength(1);
 
             if (map[x, y].CellType == CellType.Corridor
-                                    && rand.NextDouble() < SECONDARY_ROOM_DENSITY)
+                                    && rand.NextDouble() < config.SecondaryRoomDensity)
             {
                 var origin = new Point(x, y);
 
@@ -239,8 +276,8 @@ namespace ailurus
                     return;
 
                 // narrow the search for viable room locations
-                for (int radius = MAX_SECONDARY_ROOM_REACH;
-                     radius >= MIN_SECONDARY_ROOM_REACH; radius--)
+                for (int radius = config.MaximumSecondaryRoomDeviation;
+                     radius >= config.MinimumSecondaryRoomDeviation; radius--)
                 {
                     // take random samples within a radius
                     for (int i = radius; i < radius * radius; i++)
@@ -258,7 +295,7 @@ namespace ailurus
                                                 new[] { CellType.Corridor, CellType.Room }, 1))
                         {
                             // try and get away with as big a room as we can
-                            for (int size = MAX_ROOM_SIZE; size >= MIN_ROOM_SIZE; size--)
+                            for (int size = config.MaximumRoomSize; size >= config.MinimumRoomSize; size--)
                             {
                                 bool valid = false;
                                 var secondaryRoom = new Room(sample, size, size);
@@ -268,7 +305,7 @@ namespace ailurus
                                 {
                                     if (sample == room.Center) continue;
 
-                                    int minDistance = ROOM_PADDING
+                                    int minDistance = config.RoomPadding
                                                         + Math.Max(room.Width, room.Height) / 2
                                                         + size / 2;
                                     if (!HasTypeSurrounding(ref map, sample, new[] { CellType.Corridor, CellType.Room }, minDistance))
