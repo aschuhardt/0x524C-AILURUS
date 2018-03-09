@@ -175,7 +175,7 @@ namespace ailurus
                     {
                         _messages.Add(new Message("Entering map mode...", MessageType.Info));
                         _prevDrawRegion = _drawRegion;
-                        _drawRegion = new Rectangle(_drawRegion.Center, new Point(_map.Width, _map.Height));
+                        _drawRegion.Inflate(_map.Width / 4 - _prevDrawRegion.Width, _map.Height / 4 - _prevDrawRegion.Height);
                     }
                     else
                     {
