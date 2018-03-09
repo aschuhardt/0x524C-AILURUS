@@ -18,6 +18,7 @@ namespace ailurus.Player
         public int MaxStamina { get; set; }
 
         public Point Position { get; set; }
+        public int VisionRadius { get; set; }
 
         public enum PlayerTexture
         {
@@ -42,6 +43,7 @@ namespace ailurus.Player
         private const int MAX_HP = 200;
         private const int MIN_ST = 10;
         private const int MAX_ST = 40;
+        private const int DEFAULT_VISION_RADIUS = 8;
 
         public event EventHandler PlayerCreated;
         protected virtual void OnPlayerCreated(EventArgs e) => PlayerCreated(this, e);
@@ -69,6 +71,8 @@ namespace ailurus.Player
 
             MaxStamina = rand.Next(MIN_ST, MAX_ST + 1);
             Stamina = MaxStamina;
+
+            VisionRadius = DEFAULT_VISION_RADIUS;
 
             _messages.Add(new Message("Welcome, traveler!  Your quest is to venture forth in search of an object known as THE AILURUS.", MessageType.Info));
             _messages.Add(new Message("Testing...", MessageType.Combat));

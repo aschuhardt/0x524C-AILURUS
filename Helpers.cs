@@ -48,6 +48,11 @@ namespace ailurus
             return decorations;
         }
 
+        public static double Distance(int x1, int y1, int x2, int y2)
+        {
+            return Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+        }
+
         public static T GetConfiguration<T>(string path)
         {
             if (!File.Exists(path))

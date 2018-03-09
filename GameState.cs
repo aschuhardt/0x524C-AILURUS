@@ -22,6 +22,7 @@ namespace ailurus
         private TileMap _map;
         private Rectangle _mapDrawRectangle;
         private Rectangle _drawRegion;
+        private Rectangle _prevDrawRegion;
         private KeyboardState _oldKeyState;
         private Color _bgColor;
         private Container _container;
@@ -32,6 +33,7 @@ namespace ailurus
 
         private TimeSpan _inputCooldown = TimeSpan.FromMilliseconds(100);
         private TimeSpan _lastInputTime;
+        private bool _showWholeMap;
 
         private const int MAP_LEFT_PAD = 2;
         private const int MAP_TOP_PAD = 4;
@@ -74,6 +76,8 @@ namespace ailurus
             _bgColor = new Color(18, 21, 26);
 
             _oldKeyState = Keyboard.GetState();
+
+            _showWholeMap = false;
 
             SetupGUIPositioning();
             Window.AllowUserResizing = true;
@@ -164,6 +168,22 @@ namespace ailurus
                 else if (keys.IsKeyDown(Keys.Right))
                     _drawRegion.Offset(1, 0);
 
+                if (keys.IsKeyDown(Keys.M))
+                {
+                    _showWholeMap = !_showWholeMap;
+                    if (_showWholeMap)
+                    {
+                        _messages.Add(new Message("Entering map mode...", MessageType.Info));
+                        _prevDrawRegion = _drawRegion;
+                        _drawRegion = new Rectangle(_drawRegion.Center, new Point(_map.Width, _map.Height));
+                    }
+                    else
+                    {
+                        _messages.Add(new Message("Exiting map mode...", MessageType.Info));
+                        _drawRegion = _prevDrawRegion;
+                    }
+                }
+
                 _lastInputTime = gameTime.TotalGameTime;
             }
 
@@ -177,10 +197,10 @@ namespace ailurus
         {
             GraphicsDevice.Clear(_bgColor);
 
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.NonPremultiplied, sortMode: SpriteSortMode.Deferred);
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.AlphaBlend, sortMode: SpriteSortMode.Deferred);
 
             _ui.DrawRect(_mapDrawRectangle, _ui.BaseColor);
-            _map.Draw(gameTime, _mapDrawRectangle, _drawRegion);
+            _map.Draw(gameTime, _mapDrawRectangle, _drawRegion, _player.VisionRadius);
 
             var playerRect = _map.GetScreenCoordinates(_player.Position, _mapDrawRectangle, _drawRegion);
             if (_mapDrawRectangle.Contains(playerRect))

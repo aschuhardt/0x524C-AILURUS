@@ -6,6 +6,7 @@ namespace ailurus.Map
     {
         TileType TileType { get; }
         bool Obstacle { get; }
-        void Draw(GameTime gameTime, Rectangle rect);
+        bool Revealed { get; set; }
+        void Draw(GameTime gameTime, Rectangle rect, bool visible = true);
     }
 }

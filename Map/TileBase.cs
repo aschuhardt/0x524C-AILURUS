@@ -11,6 +11,7 @@ namespace ailurus.Map
         public TileType TileType { get; protected set; }
 
         public bool Obstacle { get; protected set; }
+        public bool Revealed { get; set; }
 
         protected TimeSpan AnimationInterval = TimeSpan.FromSeconds(0.5);
         protected Color SpriteColor = Color.White;
@@ -48,16 +49,26 @@ namespace ailurus.Map
             }
         }
 
-        public void Draw(GameTime gameTime, Rectangle rect)
+        public void Draw(GameTime gameTime, Rectangle rect, bool visible = true)
         {
             var availableTextures = _tileTextures[TileType];
 
-            _spriteBatch.Draw(availableTextures[_frameIndexTile], rect, SpriteColor);
+            if (visible)
+                _spriteBatch.Draw(availableTextures[_frameIndexTile], rect, SpriteColor);
+            else
+            {
+                _spriteBatch.Draw(availableTextures[_frameIndexTile], rect, SpriteColor * 0.5f);
+            }
 
             if (Decoration != null)
             {
-                _spriteBatch.Draw(_decorTextures[Decoration.DecorationType][_frameIndexDecor], rect, Decoration.Color);
+                if (visible)
+                    _spriteBatch.Draw(_decorTextures[Decoration.DecorationType][_frameIndexDecor], rect, Decoration.Color);
+                else
+                    _spriteBatch.Draw(_decorTextures[Decoration.DecorationType][_frameIndexDecor], rect, Decoration.Color * 0.5f);
             }
+
+            if (!visible) return;
 
             var elapsed = gameTime.TotalGameTime;
             if (elapsed - _lastFrameSwitch >= AnimationInterval)
