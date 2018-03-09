@@ -111,11 +111,21 @@ namespace ailurus
 
             _player = _container.Resolve<PlayerController>();
             _player.Position = _map.GetPlayerStartingPosition();
+            _player.PlayerMoveAttempt += HandlePlayerMoveAttempt;
             _player.PlayerMoved += HandlePlayerMoved;
 
             _ui = _container.Resolve<UserInterfaceController>();
 
             _messages = _container.Resolve<List<Message>>();
+        }
+
+        private void HandlePlayerMoveAttempt(object sender, EventArgs e)
+        {
+            var args = e as PlayerMoveAttemptEventArgs;
+            if (args == null) return;
+
+            var destinationTile = _map.GetAbsoluteTile(args.Destination);
+            args.Cancel = destinationTile.Obstacle;
         }
 
         private void HandlePlayerMoved(object sender, EventArgs e)

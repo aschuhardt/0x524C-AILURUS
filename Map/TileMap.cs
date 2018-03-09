@@ -78,6 +78,16 @@ namespace ailurus.Map
             }
         }
 
+        public ITile GetRelativeTile(Point coords, Rectangle region)
+        {
+            return _tiles[coords.X + region.Left, coords.X + region.Top];
+        }
+
+        public ITile GetAbsoluteTile(Point coords)
+        {
+            return _tiles[coords.X, coords.Y];
+        }
+
         public void Draw(GameTime gameTime, Rectangle rect, Rectangle region)
         {
             if (region.Width <= 0 || region.Height <= 0) return;
