@@ -76,7 +76,7 @@ namespace ailurus
             _oldKeyState = Keyboard.GetState();
             
             SetupGUIPositioning();
-            Window.AllowUserResizing = false;
+            Window.AllowUserResizing = true;
             Window.Title = "0x524C-AILURUS";
         }
 
@@ -103,6 +103,7 @@ namespace ailurus
             // register tile types
             _container.Register<GrassTile, GrassTile>();
             _container.Register<DirtTile, DirtTile>();
+            _container.Register<CobblestoneTile, CobblestoneTile>();
 
             _container.Register<TileMap, TileMap>(Reuse.Singleton);
 

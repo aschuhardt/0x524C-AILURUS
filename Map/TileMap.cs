@@ -55,18 +55,27 @@ namespace ailurus.Map
         {
             _tiles = new ITile[_width, _height];
 
+            var dungeonMap = Generator.Generate(_width, _height, _mapGenConfig);
+
             for (int x = 0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
                 {
-                    if (SimplexNoise.Noise.Generate(x * 0.07f, y * 0.07f) > 0.5f - _rand.NextDouble())
-                        _tiles[x, y] = _container.Resolve<GrassTile>();
-                    else
-                        _tiles[x, y] = _container.Resolve<DirtTile>();
+                    var cellType = dungeonMap[x, y].CellType;
+                    if (cellType == Generator.CellType.Wall)
+                    {
+                        _tiles[x, y] = _container.Resolve<CobblestoneTile>();
+                    }
+                    else if (cellType == Generator.CellType.Room
+                             || cellType == Generator.CellType.Corridor)
+                    {
+                        if (SimplexNoise.Noise.Generate(x * 0.07f, y * 0.07f) > 0.5f - _rand.NextDouble())
+                            _tiles[x, y] = _container.Resolve<GrassTile>();
+                        else
+                            _tiles[x, y] = _container.Resolve<DirtTile>();
+                    }
                 }
             }
-
-            
         }
 
         public void Draw(GameTime gameTime, Rectangle rect, Rectangle region)
@@ -88,7 +97,7 @@ namespace ailurus.Map
 
                     //var tilePosition = new Point(rect.Left + tileWidth * (x - region.Left), rect.Top + tileHeight * (y - region.Top));
 
-                    _tiles[x, y].Draw(gameTime, GetScreenCoordinates(new Point(x, y), rect, region));
+                    _tiles[x, y]?.Draw(gameTime, GetScreenCoordinates(new Point(x, y), rect, region));
                 }
             }
         }
