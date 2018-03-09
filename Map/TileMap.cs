@@ -19,13 +19,15 @@ namespace ailurus.Map
         private int _height;
         private Container _container;
         private Random _rand;
+        private Generator.MapGenerationConfig _mapGenConfig;
 
-        public TileMap(TextureMap<TileType> textures, TextureMap<DecorationType> decorTextures, Decorations decorations, SpriteBatch spriteBatch, Container container, Config config, Random rand)
+        public TileMap(TextureMap<TileType> textures, TextureMap<DecorationType> decorTextures, Decorations decorations, SpriteBatch spriteBatch, Container container, Config config, Random rand, Generator.MapGenerationConfig mapGenConfig)
         {
             _textures = textures;
             _spriteBatch = spriteBatch;
             _decorTextures = decorTextures;
             _decorations = decorations;
+            _mapGenConfig = mapGenConfig;
 
             _width = config.MapWidth;
             _height = config.MapWidth;
@@ -63,6 +65,8 @@ namespace ailurus.Map
                         _tiles[x, y] = _container.Resolve<DirtTile>();
                 }
             }
+
+            
         }
 
         public void Draw(GameTime gameTime, Rectangle rect, Rectangle region)

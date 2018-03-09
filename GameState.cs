@@ -6,8 +6,10 @@ using DryIoc;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using static ailurus.Player.PlayerController;
 
@@ -40,7 +42,8 @@ namespace ailurus
         private const double MAP_WIDTH_PERCENT = 0.90;
         private const double MAP_HEIGHT_PERCENT = 1.0;
         private const int MAP_REGION_SIZE = 17;
-        private const string CONFIG_PATH = "config.json";
+        private const string CONFIG_PATH = "config/config.json";
+        private const string MAP_GEN_CONFIG_PATH = "config/map_generation.json";
         private const int MAP_SHRINK_AMOUNT = -8;
         
         public GameState()
@@ -88,11 +91,12 @@ namespace ailurus
             _container.UseInstance(_container);
             _container.RegisterDelegate(x => new List<Message>(), Reuse.Singleton);
             _container.RegisterDelegate(x => new Random(), Reuse.Singleton);
-            _container.RegisterDelegate(x => Helpers.LoadConfig(CONFIG_PATH), Reuse.Singleton);
+            _container.RegisterDelegate(x => Helpers.GetConfiguration<Config>(CONFIG_PATH), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<TileType>(Content), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<DecorationType>(Content), Reuse.Singleton);
             _container.RegisterDelegate(x => Helpers.LoadTextures<PlayerTexture>(Content), Reuse.Singleton);
             _container.RegisterDelegate(x => Content.Load<SpriteFont>("fonts/vga"), Reuse.Singleton);
+            _container.RegisterDelegate(x => Helpers.GetConfiguration<Generator.MapGenerationConfig>(MAP_GEN_CONFIG_PATH));
             _container.Register<PlayerController, PlayerController>(Reuse.Singleton);
             _container.Register<UserInterfaceController, UserInterfaceController>(Reuse.Singleton);
 
@@ -183,7 +187,9 @@ namespace ailurus
             var config = _container.Resolve<Config>();
             config.WindowWidth = Window.ClientBounds.Width;
             config.WindowHeight = Window.ClientBounds.Height;
-            Helpers.SaveConfig(config, CONFIG_PATH);
+            
+            var json = JsonConvert.SerializeObject(config);
+            File.WriteAllText(CONFIG_PATH, json);
 
             SetupGUIPositioning();
         }

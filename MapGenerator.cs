@@ -4,136 +4,136 @@ using System.Linq;
 
 namespace ailurus
 {
-    public enum CellType
-    {
-        Nothing = 0,
-        Wall,
-        Room,
-        Corridor
-    }
-
-    public struct Cell
-    {
-        public CellType CellType;
-
-        public Cell(CellType cellType)
-        {
-            CellType = cellType;
-        }
-    }
-
-    public class MapGenerationConfig
-    {
-        public const int DEFAULT_STARTING_ROOM_SIZE = 6;
-        public const int DEFAULT_ROOM_PADDING = 2;
-        public const int DEFAULT_MIN_SEED_COUNT = 8;
-        public const int DEFAULT_MAX_SEED_COUNT = 20;
-        public const int DEFAULT_MIN_ROOM_SIZE = 2;
-        public const int DEFAULT_MAX_ROOM_SIZE = 8;
-        public const int DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS = 4096;
-        public const int DEFAULT_MIN_CORRIDOR_WIDTH = 1;
-        public const int DEFAULT_MAX_CORRIDOR_WIDTH = 2;
-        public const double DEFAULT_SECONDARY_ROOM_DENSITY = 0.1;
-        public const int DEFAULT_MIN_SECONDARY_ROOM_DEVIATION = 2;
-        public const int DEFAULT_MAX_SECONDARY_ROOM_DEVIATION = 8;
-        public const int DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES = 1;
-
-        public int StartingRoomSize { get; set; }
-        public int RoomPadding { get; set; }
-        public int MinimumSeedCount { get; set; }
-        public int MaximumSeedCount { get; set; }
-        public int MinimumRoomSize { get; set; }
-        public int MaximumRoomSize { get; set; }
-        public int MaximumSeedRoomPlacementAttempts { get; set; }
-        public int MinimumCorridorWidth { get; set; }
-        public int MaximumCorridorWidth { get; set; }
-        public double SecondaryRoomDensity { get; set; }
-        public int MinimumSecondaryRoomDeviation { get; set; }
-        public int MaximumSecondaryRoomDeviation { get; set; }
-        public int SecondaryRoomComputationPasses { get; set; }
-        public int Seed { get; set; }
-
-        public MapGenerationConfig()
-        {
-            StartingRoomSize = DEFAULT_STARTING_ROOM_SIZE;
-            RoomPadding = DEFAULT_ROOM_PADDING;
-            MinimumSeedCount = DEFAULT_MIN_SEED_COUNT;
-            MaximumSeedCount = DEFAULT_MAX_SEED_COUNT;
-            MinimumRoomSize = DEFAULT_MIN_ROOM_SIZE;
-            MaximumRoomSize = DEFAULT_MAX_ROOM_SIZE;
-            MaximumSeedRoomPlacementAttempts = DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS;
-            MinimumCorridorWidth = DEFAULT_MIN_CORRIDOR_WIDTH;
-            MaximumCorridorWidth = DEFAULT_MAX_CORRIDOR_WIDTH;
-            SecondaryRoomDensity = DEFAULT_SECONDARY_ROOM_DENSITY;
-            MinimumSecondaryRoomDeviation = DEFAULT_MIN_SECONDARY_ROOM_DEVIATION;
-            MaximumSecondaryRoomDeviation = DEFAULT_MAX_SECONDARY_ROOM_DEVIATION;
-            SecondaryRoomComputationPasses = DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES;
-            Seed = new Random().Next();
-        }
-    }
-
-    struct Room
-    {
-        public Point Center;
-        public int Width, Height;
-
-        public Room(Point center, int w, int h)
-        {
-            Center = center;
-            Width = w;
-            Height = h;
-        }
-    }
-
-    struct Point
-    {
-        public int X, Y;
-
-        public Point(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        public static bool operator ==(Point a, Point b)
-        {
-            return a.X == b.X && a.Y == b.Y;
-        }
-
-        public static bool operator !=(Point a, Point b)
-        {
-            return a.X != b.X || a.Y != b.Y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-
-            return (Point)obj == this;
-        }
-
-        // override object.GetHashCode
-        public override int GetHashCode() => X ^ Y;
-    }
-
-    struct Corridor
-    {
-        public Point Start, End;
-        public int Width;
-
-        public Corridor(Point a, Point b, int w)
-        {
-            Start = a;
-            End = b;
-            Width = w;
-        }
-    }
 
     public static class Generator
     {
+        public enum CellType
+        {
+            Nothing = 0,
+            Wall,
+            Room,
+            Corridor
+        }
+
+        public struct Cell
+        {
+            public CellType CellType;
+
+            public Cell(CellType cellType)
+            {
+                CellType = cellType;
+            }
+        }
+
+        public class MapGenerationConfig
+        {
+            public const int DEFAULT_STARTING_ROOM_SIZE = 6;
+            public const int DEFAULT_ROOM_PADDING = 2;
+            public const int DEFAULT_MIN_SEED_COUNT = 8;
+            public const int DEFAULT_MAX_SEED_COUNT = 20;
+            public const int DEFAULT_MIN_ROOM_SIZE = 2;
+            public const int DEFAULT_MAX_ROOM_SIZE = 8;
+            public const int DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS = 4096;
+            public const int DEFAULT_MIN_CORRIDOR_WIDTH = 1;
+            public const int DEFAULT_MAX_CORRIDOR_WIDTH = 2;
+            public const double DEFAULT_SECONDARY_ROOM_DENSITY = 0.1;
+            public const int DEFAULT_MIN_SECONDARY_ROOM_DEVIATION = 2;
+            public const int DEFAULT_MAX_SECONDARY_ROOM_DEVIATION = 8;
+            public const int DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES = 1;
+
+            public int StartingRoomSize { get; set; }
+            public int RoomPadding { get; set; }
+            public int MinimumSeedCount { get; set; }
+            public int MaximumSeedCount { get; set; }
+            public int MinimumRoomSize { get; set; }
+            public int MaximumRoomSize { get; set; }
+            public int MaximumSeedRoomPlacementAttempts { get; set; }
+            public int MinimumCorridorWidth { get; set; }
+            public int MaximumCorridorWidth { get; set; }
+            public double SecondaryRoomDensity { get; set; }
+            public int MinimumSecondaryRoomDeviation { get; set; }
+            public int MaximumSecondaryRoomDeviation { get; set; }
+            public int SecondaryRoomComputationPasses { get; set; }
+            public int Seed { get; set; }
+
+            public MapGenerationConfig()
+            {
+                StartingRoomSize = DEFAULT_STARTING_ROOM_SIZE;
+                RoomPadding = DEFAULT_ROOM_PADDING;
+                MinimumSeedCount = DEFAULT_MIN_SEED_COUNT;
+                MaximumSeedCount = DEFAULT_MAX_SEED_COUNT;
+                MinimumRoomSize = DEFAULT_MIN_ROOM_SIZE;
+                MaximumRoomSize = DEFAULT_MAX_ROOM_SIZE;
+                MaximumSeedRoomPlacementAttempts = DEFAULT_MAX_SEED_ROOM_PLACEMENT_ATTEMPTS;
+                MinimumCorridorWidth = DEFAULT_MIN_CORRIDOR_WIDTH;
+                MaximumCorridorWidth = DEFAULT_MAX_CORRIDOR_WIDTH;
+                SecondaryRoomDensity = DEFAULT_SECONDARY_ROOM_DENSITY;
+                MinimumSecondaryRoomDeviation = DEFAULT_MIN_SECONDARY_ROOM_DEVIATION;
+                MaximumSecondaryRoomDeviation = DEFAULT_MAX_SECONDARY_ROOM_DEVIATION;
+                SecondaryRoomComputationPasses = DEFAULT_SECONDARY_ROOM_COMPUTATION_PASSES;
+                Seed = new Random().Next();
+            }
+        }
+
+        struct Room
+        {
+            public Point Center;
+            public int Width, Height;
+
+            public Room(Point center, int w, int h)
+            {
+                Center = center;
+                Width = w;
+                Height = h;
+            }
+        }
+
+        struct Point
+        {
+            public int X, Y;
+
+            public Point(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            public static bool operator ==(Point a, Point b)
+            {
+                return a.X == b.X && a.Y == b.Y;
+            }
+
+            public static bool operator !=(Point a, Point b)
+            {
+                return a.X != b.X || a.Y != b.Y;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+
+                return (Point)obj == this;
+            }
+
+            // override object.GetHashCode
+            public override int GetHashCode() => X ^ Y;
+        }
+
+        struct Corridor
+        {
+            public Point Start, End;
+            public int Width;
+
+            public Corridor(Point a, Point b, int w)
+            {
+                Start = a;
+                End = b;
+                Width = w;
+            }
+        }
 
         public static Cell[,] Generate(int w, int h, MapGenerationConfig config)
         {

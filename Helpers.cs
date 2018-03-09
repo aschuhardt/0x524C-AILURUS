@@ -33,41 +33,6 @@ namespace ailurus
             return loaded;
         }
 
-        public static Config LoadConfig(string path)
-        {
-            path = Path.GetFullPath(path);
-
-            var cfg = new Config()
-            {
-                WindowWidth = Config.DEFAULT_WIDTH,
-                WindowHeight = Config.DEFAULT_HEIGHT,
-                MapWidth = Config.DEFAULT_MAP_SIZE,
-                MapHeight = Config.DEFAULT_MAP_SIZE
-            };
-
-            if (!File.Exists(path))
-            {
-                File.WriteAllText(path, JsonConvert.SerializeObject(cfg, Formatting.Indented));
-                return cfg;
-            }
-            else
-            {
-                try
-                {
-                    return JsonConvert.DeserializeObject<Config>(File.ReadAllText(path));
-                }
-                catch (Exception)
-                {
-                    return cfg;
-                }
-            }
-        }
-
-        public static void SaveConfig(Config cfg, string path)
-        {
-            File.WriteAllText(path, JsonConvert.SerializeObject(cfg, Formatting.Indented));
-        }
-
         public static Decorations GetDecorations()
         {
             var decorations = new Decorations();
@@ -85,23 +50,23 @@ namespace ailurus
             return decorations;
         }
 
-        public static MapGenerationConfig GetMapGenerationConfig()
+        public static T GetConfiguration<T>(string path)
         {
             if (!File.Exists(MAP_GEN_CONFIG_PATH))
             {
                 try
                 {
-                    var defaultConfig = new MapGenerationConfig();
+                    var defaultConfig = Activator.CreateInstance<T>();
                     var json = JsonConvert.SerializeObject(defaultConfig, Formatting.Indented);
                     Directory.CreateDirectory(Path.GetDirectoryName(MAP_GEN_CONFIG_PATH));
                     File.WriteAllText(MAP_GEN_CONFIG_PATH, json);
-                    return GetMapGenerationConfig();
+                    return GetConfiguration<T>(path);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Failed to write default configuration file to {MAP_GEN_CONFIG_PATH}");
                     Console.WriteLine(ex.Message);
-                    return new MapGenerationConfig();
+                    return Activator.CreateInstance<T>();
                 }
             }
             else
@@ -109,13 +74,13 @@ namespace ailurus
                 try
                 {
                     var json = File.ReadAllText(MAP_GEN_CONFIG_PATH);
-                    return JsonConvert.DeserializeObject<MapGenerationConfig>(json);
+                    return JsonConvert.DeserializeObject<T>(json);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Failed to read configuration file at {MAP_GEN_CONFIG_PATH}");
                     Console.WriteLine(ex.Message);
-                    return new MapGenerationConfig();
+                    return Activator.CreateInstance<T>();
                 }
             }
         }
