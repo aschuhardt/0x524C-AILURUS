@@ -67,18 +67,17 @@ namespace ailurus.Player
             _spriteBatch = spriteBatch;
 
             MaxHitpoints = rand.Next(MIN_HP, MAX_HP + 1);
-            Hitpoints = MaxHitpoints / 2;
+            Hitpoints = MaxHitpoints;
 
             MaxStamina = rand.Next(MIN_ST, MAX_ST + 1);
             Stamina = MaxStamina;
 
             VisionRadius = DEFAULT_VISION_RADIUS;
 
-            _messages.Add(new Message("Welcome, traveler!  Your quest is to venture forth in search of an object known as THE AILURUS.", MessageType.Info));
-            _messages.Add(new Message("Testing...", MessageType.Combat));
-            _messages.Add(new Message("Testing...", MessageType.Info));
-            _messages.Add(new Message("Testing...", MessageType.Dialog));
-            _messages.Add(new Message("Testing...", MessageType.Healing));
+            _messages.Add(new Message("Welcome!", MessageType.Info));
+            _messages.Add(new Message("Use either the numpad or WASD to move.", MessageType.Dialog));
+            _messages.Add(new Message("The +/- keys on the numpad can be used to zoom the map.", MessageType.Healing));
+            _messages.Add(new Message("The M key will toggle a zoomed-out state.", MessageType.Healing));
 
             if (PlayerCreated != null)
                 OnPlayerCreated(EventArgs.Empty);
@@ -92,13 +91,13 @@ namespace ailurus.Player
                 var (dx, dy) = (0, 0);
 
                 // check for movement input
-                if (keys.IsKeyDown(Keys.NumPad8))
+                if (keys.IsKeyDown(Keys.NumPad8) || keys.IsKeyDown(Keys.W))
                     dy -= 1;
-                else if (keys.IsKeyDown(Keys.NumPad2))
+                else if (keys.IsKeyDown(Keys.NumPad2) || keys.IsKeyDown(Keys.S))
                     dy += 1;
-                else if (keys.IsKeyDown(Keys.NumPad4))
+                else if (keys.IsKeyDown(Keys.NumPad4) || keys.IsKeyDown(Keys.A))
                     dx -= 1;
-                else if (keys.IsKeyDown(Keys.NumPad6))
+                else if (keys.IsKeyDown(Keys.NumPad6) || keys.IsKeyDown(Keys.D))
                     dx += 1;
                 else if (keys.IsKeyDown(Keys.NumPad7))
                 {
@@ -123,7 +122,6 @@ namespace ailurus.Player
 
                 if (dx != 0 || dy != 0)
                 {
-                    _messages.Add(new Message($"Player moved to ({Position.X}, {Position.Y})!", MessageType.Info));
                     var destination = new Point(Position.X + dx, Position.Y + dy);
                     var moveAttemptArgs = new PlayerMoveAttemptEventArgs(destination);
                     if (PlayerMoveAttempt != null)

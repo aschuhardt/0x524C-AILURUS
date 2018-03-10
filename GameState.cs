@@ -173,13 +173,11 @@ namespace ailurus
                     _showWholeMap = !_showWholeMap;
                     if (_showWholeMap)
                     {
-                        _messages.Add(new Message("Entering map mode...", MessageType.Info));
                         _prevDrawRegion = _drawRegion;
                         _drawRegion.Inflate(_map.Width / 4 - _prevDrawRegion.Width, _map.Height / 4 - _prevDrawRegion.Height);
                     }
                     else
                     {
-                        _messages.Add(new Message("Exiting map mode...", MessageType.Info));
                         _drawRegion = _prevDrawRegion;
                     }
                 }
